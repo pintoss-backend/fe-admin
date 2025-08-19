@@ -5,28 +5,20 @@ import inquirer from "inquirer";
 
 const keywords = [
   {
-    name: "🚀 init - 프로젝트 초기 설정",
-    value: "🚀 init",
-  },
-  {
     name: "✨ feat - 새로운 기능 추가",
     value: "✨ feat",
   },
   {
-    name: "🐛 fix - 버그 수정 및 개선선",
-    value: "🐛 fix",
+    name: "🔧 fix - 버그 수정 및 개선선",
+    value: "🔧 fix",
   },
   {
-    name: "🚨 hotfix - 긴급 버그 수정",
-    value: "🚨 hotfix",
+    name: "⚡ hotfix - 긴급 버그 수정",
+    value: "⚡ hotfix",
   },
   {
     name: "📝 docs - 문서 수정 및 추가",
     value: "📝 docs",
-  },
-  {
-    name: "🔍 modify - 코드 간단히 수정",
-    value: "🔍 modify",
   },
   {
     name: "💄 style - 코드 의미에 영향을 주지 않는 변경사항(코드 포맷팅, 세미콜론 누락 등)",
@@ -39,6 +31,10 @@ const keywords = [
   {
     name: "📦 chore - 빌드 부분 혹은 패키지 매니저 수정 사항(예:.gitignore 수정)",
     value: "📦 chore",
+  },
+  {
+    name: "🚀 init - 프로젝트 초기 설정",
+    value: "🚀 init",
   },
 ];
 
