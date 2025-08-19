@@ -9,7 +9,7 @@ const keywords = [
     value: "✨ feat",
   },
   {
-    name: "🔧 fix - 버그 수정 및 개선선",
+    name: "🔧 fix - 버그 수정 및 개선",
     value: "🔧 fix",
   },
   {
