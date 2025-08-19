@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { exec } from "child_process";
+import { exec, execSync } from "child_process";
 import inquirer from "inquirer";
 
 const keywords = [
@@ -38,8 +38,40 @@ const keywords = [
   },
 ];
 
+// 브랜치에서 #숫자 추출
+function getIssueNumberFromBranch(): string | null {
+  try {
+    const branchName = execSync("git rev-parse --abbrev-ref HEAD")
+      .toString()
+      .trim();
+    const match = branchName.match(/#(\d+)/); // # 뒤 숫자만 추출
+    return match && match[1] ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+// 이슈 번호 가져오기 (브랜치 자동 + 사용자 입력 보완)
+async function getIssueNumberOrPrompt(): Promise<string | null> {
+  const branchIssue = getIssueNumberFromBranch();
+  if (branchIssue) return branchIssue;
+
+  const { issueNumber } = await inquirer.prompt({
+    type: "input",
+    name: "issueNumber",
+    message: "이슈 번호를 입력하세요 (없으면 엔터):",
+    validate: (input: string) => {
+      if (input.trim() && !/^\d+$/.test(input.trim())) {
+        return "숫자만 입력해주세요.";
+      }
+      return true;
+    },
+  });
+
+  return issueNumber.trim() || null;
+}
+
 async function runCommitScript() {
-  // 스테이징된 파일만 확인
   exec("git diff --cached --name-only", async (error, stdout) => {
     if (error) {
       console.error("Git 상태 확인 실패:", error.message);
@@ -51,20 +83,8 @@ async function runCommitScript() {
       return;
     }
 
-    // 이슈 번호 입력 프롬프트
-    const { issueNumber } = await inquirer.prompt({
-      type: "input",
-      name: "issueNumber",
-      message: "이슈 번호를 입력하세요 (예: 123, 없으면 엔터):",
-      validate: (input: string) => {
-        if (input.trim() && !/^\d+$/.test(input.trim())) {
-          return "숫자만 입력해주세요.";
-        }
-        return true;
-      },
-    });
+    const issueNumber = await getIssueNumberOrPrompt();
 
-    // 키워드 선택 프롬프트
     const { selectedKeyword } = await inquirer.prompt({
       type: "list",
       name: "selectedKeyword",
@@ -72,7 +92,6 @@ async function runCommitScript() {
       choices: keywords,
     });
 
-    // 커밋 메시지 입력 프롬프트
     const { commitMessage } = await inquirer.prompt({
       type: "input",
       name: "commitMessage",
@@ -83,8 +102,7 @@ async function runCommitScript() {
       },
     });
 
-    // 최종 메시지 구성
-    const issuePrefix = issueNumber.trim() ? `#${issueNumber.trim()} ` : "";
+    const issuePrefix = issueNumber ? `#${issueNumber} ` : "";
     const fullCommitMessage = `${issuePrefix}${selectedKeyword}: ${commitMessage}`;
 
     exec(`git commit -m "${fullCommitMessage}"`, (error, stdout, stderr) => {
@@ -92,9 +110,7 @@ async function runCommitScript() {
         console.error("커밋 실패:", error?.message || stderr);
         return;
       }
-      if (stdout) {
-        console.log("커밋 성공:", stdout.trim());
-      }
+      if (stdout) console.log("커밋 성공:", stdout.trim());
     });
   });
 }
