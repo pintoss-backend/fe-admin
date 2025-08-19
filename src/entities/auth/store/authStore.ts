@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AuthState, User } from '../../../shared';
+import type { AuthState, User } from '@/shared/types/auth';
 
 interface AuthStore extends AuthState {
 	login: (email: string, password: string) => Promise<void>;

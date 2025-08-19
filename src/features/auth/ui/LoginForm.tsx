@@ -1,8 +1,7 @@
-import React from 'react';
 import { Form, Input, Button, Card, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuthStore } from '../../../entities/auth/store/authStore';
-import type { LoginFormData } from '../../../shared/types/auth';
+import { useAuthStore } from '@/entities/auth/store/authStore';
+import type { LoginFormData } from '@/shared/types/auth';
 
 const { Title, Text } = Typography;
 

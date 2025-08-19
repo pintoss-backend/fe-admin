@@ -1,6 +1,6 @@
 import { Layout, Typography, Button, Card, Row, Col, Space } from 'antd';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { useAuthStore } from '../entities/auth/store/authStore';
+import { useAuthStore } from '@/entities/auth/store/authStore';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
