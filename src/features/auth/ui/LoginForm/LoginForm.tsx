@@ -2,6 +2,7 @@ import { Form, Input, Button, Card, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 import type { LoginFormData } from '@/shared/types/auth';
+import * as styles from './LoginForm.css';
 
 const { Title, Text } = Typography;
 
@@ -24,23 +25,9 @@ export const LoginForm: React.FC = () => {
 	};
 
 	return (
-		<div
-			style={{
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				minHeight: '100vh',
-				width: '100vw',
-				background: '#f0f2f5',
-			}}
-		>
-			<Card
-				style={{
-					width: 400,
-					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-				}}
-			>
-				<div style={{ textAlign: 'center', marginBottom: 32 }}>
+		<div className={styles.LoginFormContainer}>
+			<Card className={styles.LoginFormCard}>
+				<div className={styles.LoginFormTitle}>
 					<Title level={2} style={{ marginBottom: 8 }}>
 						관리자 로그인
 					</Title>
@@ -99,7 +86,7 @@ export const LoginForm: React.FC = () => {
 					</Form.Item>
 				</Form>
 
-				<div style={{ textAlign: 'center', marginTop: 16 }}>
+				<div className={styles.LoginFormFooter}>
 					<Text type="secondary" style={{ fontSize: 12 }}>
 						테스트 계정: admin@example.com / password123
 					</Text>

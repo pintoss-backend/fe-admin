@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { LoginForm } from '@/features/auth/ui/LoginForm';
+import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
-import { Notice } from '@/pages/notice';
+import { Notice } from '@/pages/Notice';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 
 function App() {
