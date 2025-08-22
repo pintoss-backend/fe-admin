@@ -10,18 +10,25 @@ export const LoginForm: React.FC = () => {
 	const { login, isLoading } = useAuthStore();
 	const [form] = Form.useForm();
 
-	const onFinish = async (values: LoginFormData) => {
+	const handleSubmit = async (values: LoginFormData) => {
 		try {
-			// 로그인 시도
 			await login(values.email, values.password);
-			message.success('로그인 성공!', 1.5); // 1.5초간 표시
+			message.success('로그인 성공!', 1.5);
 		} catch (error) {
-			if (error instanceof Error) {
-				message.error(error.message, 2); // 2초간 표시
-			} else {
-				message.error('로그인에 실패했습니다.', 2); // 2초간 표시
-			}
+			const errorMessage = error instanceof Error ? error.message : '로그인에 실패했습니다.';
+			message.error(errorMessage, 2);
 		}
+	};
+
+	const VALIDATION_RULES = {
+		email: [
+			{ required: true, message: '이메일을 입력해주세요' },
+			{ type: 'email' as const, message: '이메일 형식이 올바르지 않습니다' },
+		],
+		password: [
+			{ required: true, message: '비밀번호를 입력해주세요' },
+			{ min: 6, message: '비밀번호는 최소 6자 이상이어야 합니다' },
+		],
 	};
 
 	return (
@@ -34,38 +41,12 @@ export const LoginForm: React.FC = () => {
 					<Text type="secondary">계정 정보를 입력하여 로그인하세요</Text>
 				</div>
 
-				<Form form={form} name="login" onFinish={onFinish} autoComplete="off" layout="vertical">
-					<Form.Item
-						name="email"
-						label="이메일"
-						rules={[
-							{
-								required: true,
-								message: '이메일을 입력해주세요',
-							},
-							{
-								type: 'email',
-								message: '올바른 이메일 형식이 아닙니다',
-							},
-						]}
-					>
+				<Form form={form} name="login" onFinish={handleSubmit} autoComplete="off" layout="vertical">
+					<Form.Item name="email" label="이메일" rules={VALIDATION_RULES.email}>
 						<Input prefix={<UserOutlined />} placeholder="이메일을 입력하세요" size="large" />
 					</Form.Item>
 
-					<Form.Item
-						name="password"
-						label="비밀번호"
-						rules={[
-							{
-								required: true,
-								message: '비밀번호를 입력해주세요',
-							},
-							{
-								min: 6,
-								message: '비밀번호는 최소 6자 이상이어야 합니다',
-							},
-						]}
-					>
+					<Form.Item name="password" label="비밀번호" rules={VALIDATION_RULES.password}>
 						<Input.Password
 							prefix={<LockOutlined />}
 							placeholder="비밀번호를 입력하세요"
