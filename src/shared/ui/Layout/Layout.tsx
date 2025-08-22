@@ -48,6 +48,11 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 		return () => window.removeEventListener('resize', checkMobile);
 	}, [setCollapsed]);
 
+	// 페이지 title 설정
+	useEffect(() => {
+		document.title = `${title} - Admin`;
+	}, [title]);
+
 	return (
 		<Layout className={styles.LayoutContainer}>
 			{!isMobile && <SideMenu collapsed={collapsed} onCollapse={setCollapsed} />}
