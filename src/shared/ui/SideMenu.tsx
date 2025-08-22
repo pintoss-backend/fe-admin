@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout, Menu, Typography } from 'antd';
 import {
 	DashboardOutlined,
@@ -12,6 +12,7 @@ import {
 	CreditCardOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@/entities/auth/store/authStore';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -24,6 +25,15 @@ interface SideMenuProps {
 export const SideMenu: React.FC<SideMenuProps> = ({ collapsed, onCollapse }) => {
 	const { logout } = useAuthStore();
 	const [selectedKey, setSelectedKey] = useState('dashboard');
+	const navigate = useNavigate();
+	const location = useLocation();
+
+	// URL 변경 시 selectedKey 업데이트
+	useEffect(() => {
+		const path = location.pathname;
+		const key = path.split('/')[1] || 'dashboard';
+		setSelectedKey(key);
+	}, [location.pathname]);
 
 	const menuItems = [
 		{
@@ -72,6 +82,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({ collapsed, onCollapse }) => 
 		setSelectedKey(key);
 		// 여기에 라우팅 로직을 추가할 수 있습니다
 		console.log('메뉴 클릭:', key);
+		navigate(`/${key}`);
 	};
 
 	const handleLogout = () => {
