@@ -40,6 +40,14 @@ export const Header = style({
 });
 
 export const MobileHeader = style({
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'space-between',
+	background: '#fff',
+	boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+	position: 'sticky',
+	top: 0,
+	zIndex: 1,
 	height: '56px',
 	padding: '0 12px',
 });
@@ -48,6 +56,7 @@ export const HeaderLeft = style({
 	display: 'flex',
 	alignItems: 'center',
 	gap: '12px',
+	flex: 1,
 });
 
 export const MobileMenuButton = style({
@@ -55,13 +64,29 @@ export const MobileMenuButton = style({
 });
 
 export const HeaderTitle = style({
-	margin: 0,
-	fontSize: '20px',
+	selectors: {
+		'&.ant-typography': {
+			margin: 0,
+			fontSize: '20px',
+			lineHeight: '64px',
+			display: 'flex',
+			alignItems: 'center',
+			height: '64px',
+		},
+	},
 });
 
 export const MobileHeaderTitle = style({
-	margin: 0,
-	fontSize: '16px',
+	selectors: {
+		'&.ant-typography': {
+			margin: 0,
+			fontSize: '16px',
+			lineHeight: '56px',
+			display: 'flex',
+			alignItems: 'center',
+			height: '56px',
+		},
+	},
 });
 
 export const HeaderRight = style({
@@ -74,6 +99,7 @@ export const MobileHeaderRight = style({
 	display: 'flex',
 	alignItems: 'center',
 	gap: '8px',
+	flexShrink: 0,
 });
 
 export const UserInfo = style({
@@ -91,7 +117,7 @@ export const Content = style({
 });
 
 export const MobileContent = style({
-	padding: '8px',
+	padding: '12px',
 	background: '#f5f5f5',
-	minHeight: 'calc(100vh - 64px)',
+	minHeight: 'calc(100vh - 56px)',
 });

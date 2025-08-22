@@ -5,6 +5,7 @@ import { useAuthStore } from '@/entities/auth/store/authStore';
 import { useLayoutStore } from '@/shared/store/layoutStore';
 import { defaultMenuItems } from '@/shared/model/menuItems';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { AdminLogo } from '@/shared/ui/icons';
 import * as styles from './SideMenu.css';
 
 const { Sider } = Layout;
@@ -19,6 +20,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({ collapsed, onCollapse }) => 
 	const { logout } = useAuthStore();
 	const { setCollapsed } = useLayoutStore();
 	const [selectedKey, setSelectedKey] = useState('dashboard');
+	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -29,9 +31,18 @@ export const SideMenu: React.FC<SideMenuProps> = ({ collapsed, onCollapse }) => 
 		setSelectedKey(key);
 	}, [location.pathname]);
 
+	// 화면 크기 변화 감지
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth <= 768);
+		};
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
 	const handleMenuClick = ({ key }: { key: string }) => {
 		setSelectedKey(key);
-		console.log('메뉴 클릭:', key);
 		navigate(`/${key}`);
 		// 모바일에서 메뉴 클릭 시 자동으로 접기
 		if (window.innerWidth <= 768) {
@@ -54,11 +65,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({ collapsed, onCollapse }) => 
 			className={styles.SideMenuContainer}
 		>
 			<div className={collapsed ? styles.SideMenuHeaderCollapsed : styles.SideMenuHeader}>
-				{!collapsed && (
-					<Text strong className={styles.SideMenuTitle}>
-						메뉴 (아이콘 대체)
-					</Text>
-				)}
+				{!collapsed && !isMobile && <AdminLogo width={120} height={35} />}
 			</div>
 			<Menu
 				mode="inline"

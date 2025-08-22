@@ -58,7 +58,7 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 					onClose={() => setMobileMenuOpen(false)}
 					open={mobileMenuOpen}
 					width={250}
-					bodyStyle={{ padding: 0 }}
+					styles={{ body: { padding: 0 } }}
 				>
 					<div className={styles.DrawerContent}>
 						<Menu
@@ -66,7 +66,6 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 							items={defaultMenuItems}
 							className={styles.DrawerMenu}
 							onClick={({ key }: { key: string }) => {
-								console.log('메뉴 클릭:', key);
 								navigate(`/${key}`);
 								setMobileMenuOpen(false);
 							}}
@@ -110,7 +109,12 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 						className={isMobile ? styles.MobileHeaderRight : styles.HeaderRight}
 					>
 						{!isMobile && <UserProfile />}
-						<Button type="primary" icon={<LogoutOutlined />} onClick={handleLogout} size="small">
+						<Button
+							type="primary"
+							icon={<LogoutOutlined />}
+							onClick={handleLogout}
+							size={isMobile ? 'small' : 'middle'}
+						>
 							{!isMobile && '로그아웃'}
 						</Button>
 					</Space>
