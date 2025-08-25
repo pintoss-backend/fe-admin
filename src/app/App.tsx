@@ -3,6 +3,7 @@ import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
 import { Notice } from '@/pages/Notice';
 import { useAuthStore } from '@/entities/auth/store/authStore';
+import { Inquiries } from '@/pages/inquiry/Inquiries';
 
 function App() {
 	const { isAuthenticated } = useAuthStore();
@@ -20,7 +21,7 @@ function App() {
 			<Route path="/sms" element={<Dashboard />} />
 			<Route path="/notifications" element={<Notice />} />
 			<Route path="/faq" element={<Dashboard />} />
-			<Route path="/inquiries" element={<Dashboard />} />
+			<Route path="/inquiries" element={<Inquiries />} />
 			<Route path="/settings" element={<Dashboard />} />
 		</Routes>
 	);
