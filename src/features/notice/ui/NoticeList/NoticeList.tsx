@@ -1,4 +1,4 @@
-import { Typography, Card, List, Tag, Button, Space, Popconfirm, message } from 'antd';
+import { Typography, Card, List, Tag, Button, Space, Popconfirm, message, Empty } from 'antd';
 import {
 	DeleteOutlined,
 	PlusOutlined,
@@ -201,23 +201,35 @@ export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice, onEditNotic
 				}
 				extra={extraButton}
 			>
-				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-					<SortableContext
-						items={notices.map((notice) => notice.id)}
-						strategy={verticalListSortingStrategy}
+				{notices.length === 0 ? (
+					<Empty
+						description="등록된 공지사항이 없습니다."
+						image={Empty.PRESENTED_IMAGE_SIMPLE}
+						style={{ padding: '40px 0' }}
+					/>
+				) : (
+					<DndContext
+						sensors={sensors}
+						collisionDetection={closestCenter}
+						onDragEnd={handleDragEnd}
 					>
-						<List
-							dataSource={notices}
-							renderItem={(notice) => (
-								<SortableNoticeItem
-									notice={notice}
-									onEditNotice={onEditNotice}
-									onDelete={handleDelete}
-								/>
-							)}
-						/>
-					</SortableContext>
-				</DndContext>
+						<SortableContext
+							items={notices.map((notice) => notice.id)}
+							strategy={verticalListSortingStrategy}
+						>
+							<List
+								dataSource={notices}
+								renderItem={(notice) => (
+									<SortableNoticeItem
+										notice={notice}
+										onEditNotice={onEditNotice}
+										onDelete={handleDelete}
+									/>
+								)}
+							/>
+						</SortableContext>
+					</DndContext>
+				)}
 			</Card>
 		</div>
 	);
