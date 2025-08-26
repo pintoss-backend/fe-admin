@@ -31,7 +31,7 @@ export const defaultMenuItems = [
 		label: 'SMS 관리',
 	},
 	{
-		key: 'notifications',
+		key: 'cs/notice',
 		icon: <BellOutlined />,
 		label: '공지사항',
 	},

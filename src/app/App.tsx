@@ -18,7 +18,7 @@ function App() {
 			<Route path="/users" element={<Dashboard />} />
 			<Route path="/payments" element={<Dashboard />} />
 			<Route path="/sms" element={<Dashboard />} />
-			<Route path="/notifications" element={<Notice />} />
+			<Route path="/cs/notice" element={<Notice />} />
 			<Route path="/faq" element={<Dashboard />} />
 			<Route path="/inquiries" element={<Dashboard />} />
 			<Route path="/settings" element={<Dashboard />} />
