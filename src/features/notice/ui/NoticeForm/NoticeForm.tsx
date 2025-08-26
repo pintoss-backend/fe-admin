@@ -1,9 +1,9 @@
 import { Form, Input, Select, Button, DatePicker, Space, Card, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { useNoticeStore } from '@/entities/notice';
-import type { CreateNoticeData } from '@/entities/notice';
+import type { CreateNoticeData, Notice } from '@/entities/notice';
 import * as styles from './NoticeForm.css';
 
 const { TextArea } = Input;
@@ -12,12 +12,26 @@ const { Option } = Select;
 interface NoticeFormProps {
 	onSubmit?: (data: CreateNoticeData) => void;
 	onCancel?: () => void;
+	initialData?: Notice | null;
 }
 
-export const NoticeForm: React.FC<NoticeFormProps> = ({ onSubmit, onCancel }) => {
+export const NoticeForm: React.FC<NoticeFormProps> = ({ onSubmit, onCancel, initialData }) => {
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState(false);
-	const { addNotice } = useNoticeStore();
+	const { addNotice, updateNotice } = useNoticeStore();
+	const isEditMode = !!initialData;
+
+	// 수정 모드일 때 폼 초기값 설정
+	useEffect(() => {
+		if (initialData) {
+			form.setFieldsValue({
+				title: initialData.title,
+				content: initialData.content,
+				priority: initialData.priority,
+				date: dayjs(initialData.date),
+			});
+		}
+	}, [initialData, form]);
 
 	const handleSubmit = async (values: any) => {
 		setLoading(true);
@@ -29,13 +43,19 @@ export const NoticeForm: React.FC<NoticeFormProps> = ({ onSubmit, onCancel }) =>
 				date: values.date.format('YYYY-MM-DD'),
 			};
 
-			addNotice(noticeData);
-			message.success('공지사항이 성공적으로 등록되었습니다.');
+			if (isEditMode && initialData) {
+				updateNotice(initialData.id, noticeData);
+				message.success('공지사항이 성공적으로 수정되었습니다.');
+			} else {
+				addNotice(noticeData);
+				message.success('공지사항이 성공적으로 등록되었습니다.');
+			}
+
 			onSubmit?.(noticeData);
 			form.resetFields();
 		} catch (error) {
-			console.error('공지사항 등록 실패:', error);
-			message.error('공지사항 등록에 실패했습니다.');
+			console.error('공지사항 처리 실패:', error);
+			message.error(isEditMode ? '공지사항 수정에 실패했습니다.' : '공지사항 등록에 실패했습니다.');
 		} finally {
 			setLoading(false);
 		}
@@ -47,7 +67,7 @@ export const NoticeForm: React.FC<NoticeFormProps> = ({ onSubmit, onCancel }) =>
 	};
 
 	return (
-		<Card title="공지사항 등록" className={styles.noticeFormCard}>
+		<Card title={isEditMode ? '공지사항 수정' : '공지사항 등록'} className={styles.noticeFormCard}>
 			<Form
 				form={form}
 				layout="vertical"
@@ -95,8 +115,13 @@ export const NoticeForm: React.FC<NoticeFormProps> = ({ onSubmit, onCancel }) =>
 
 				<Form.Item className={styles.formActions}>
 					<Space>
-						<Button type="primary" htmlType="submit" icon={<PlusOutlined />} loading={loading}>
-							등록
+						<Button
+							type="primary"
+							htmlType="submit"
+							icon={isEditMode ? <EditOutlined /> : <PlusOutlined />}
+							loading={loading}
+						>
+							{isEditMode ? '수정' : '등록'}
 						</Button>
 						<Button onClick={handleCancel}>취소</Button>
 					</Space>

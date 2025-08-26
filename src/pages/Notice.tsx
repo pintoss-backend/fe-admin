@@ -3,22 +3,36 @@ import { Space, Divider } from 'antd';
 import { AppLayout } from '@/shared/ui';
 import { NoticeList } from '@/features/notice';
 import { NoticeForm } from '@/features/notice';
-import type { CreateNoticeData } from '@/entities/notice';
+import type { CreateNoticeData, Notice as NoticeItem } from '@/entities/notice';
 
 export const Notice = () => {
 	const [showForm, setShowForm] = useState(false);
+	const [editingNotice, setEditingNotice] = useState<NoticeItem | null>(null);
 
 	const handleFormSubmit = (data: CreateNoticeData) => {
-		console.log('공지사항 등록 완료:', data);
+		if (editingNotice) {
+			console.log('공지사항 수정 완료:', { id: editingNotice.id, ...data });
+			// 여기에 실제 수정 로직을 추가할 수 있습니다
+		} else {
+			console.log('공지사항 등록 완료:', data);
+			// 여기에 실제 등록 로직을 추가할 수 있습니다
+		}
 		setShowForm(false);
-		// 여기에 실제 등록 로직을 추가할 수 있습니다
+		setEditingNotice(null);
 	};
 
 	const handleFormCancel = () => {
 		setShowForm(false);
+		setEditingNotice(null);
 	};
 
 	const handleAddNotice = () => {
+		setEditingNotice(null);
+		setShowForm(true);
+	};
+
+	const handleEditNotice = (notice: NoticeItem) => {
+		setEditingNotice(notice);
 		setShowForm(true);
 	};
 
@@ -27,12 +41,16 @@ export const Notice = () => {
 			<Space direction="vertical" style={{ width: '100%' }} size="large">
 				{showForm && (
 					<>
-						<NoticeForm onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
+						<NoticeForm
+							onSubmit={handleFormSubmit}
+							onCancel={handleFormCancel}
+							initialData={editingNotice}
+						/>
 						<Divider />
 					</>
 				)}
 
-				<NoticeList onAddNotice={handleAddNotice} />
+				<NoticeList onAddNotice={handleAddNotice} onEditNotice={handleEditNotice} />
 			</Space>
 		</AppLayout>
 	);

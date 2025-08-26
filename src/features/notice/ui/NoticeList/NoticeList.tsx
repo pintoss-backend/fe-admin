@@ -1,5 +1,5 @@
 import { Typography, Card, List, Tag, Button, Space, Popconfirm } from 'antd';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useNoticeStore } from '@/entities/notice';
 import * as styles from './NoticeList.css';
 
@@ -33,9 +33,10 @@ const getPriorityText = (priority: 'high' | 'medium' | 'low') => {
 
 interface NoticeListProps {
 	onAddNotice?: () => void;
+	onEditNotice?: (notice: any) => void;
 }
 
-export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice }) => {
+export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice, onEditNotice }) => {
 	const { notices, removeNotice } = useNoticeStore();
 
 	const handleDelete = (id: string) => {
@@ -75,6 +76,14 @@ export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice }) => {
 								}
 							/>
 							<Space>
+								{onEditNotice && (
+									<Button
+										type="text"
+										icon={<EditOutlined />}
+										size="small"
+										onClick={() => onEditNotice(notice)}
+									/>
+								)}
 								<Popconfirm
 									title="공지사항 삭제"
 									description="이 공지사항을 삭제하시겠습니까?"
