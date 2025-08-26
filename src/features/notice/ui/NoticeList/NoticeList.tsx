@@ -60,10 +60,13 @@ const SortableNoticeItem = ({ notice, onEditNotice, onDelete }: any) => {
 	};
 
 	return (
-		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+		<div ref={setNodeRef} style={style}>
 			<List.Item className={styles.noticeItem}>
-				<div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'grab', flex: 1 }}>
-					<MenuOutlined style={{ color: '#999', fontSize: '16px', marginLeft: '-8px' }} />
+				<div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+					{/* 드래그 핸들만 드래그 이벤트 적용 */}
+					<div {...attributes} {...listeners} style={{ cursor: 'grab' }}>
+						<MenuOutlined style={{ color: '#999', fontSize: '16px', marginLeft: '-8px' }} />
+					</div>
 					<List.Item.Meta
 						style={{ marginLeft: '16px' }}
 						title={
