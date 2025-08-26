@@ -4,6 +4,7 @@ export interface Notice {
 	content: string;
 	date: string;
 	priority: 'high' | 'medium' | 'low';
+	displayOrder: number;
 	createdAt?: string;
 	updatedAt?: string;
 }

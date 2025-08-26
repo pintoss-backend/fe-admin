@@ -1,6 +1,22 @@
 import { Typography, Card, List, Tag, Button, Space, Popconfirm } from 'antd';
-import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, EditOutlined, MenuOutlined } from '@ant-design/icons';
 import { useNoticeStore } from '@/entities/notice';
+import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core';
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import * as styles from './NoticeList.css';
 
 const { Text } = Typography;
@@ -31,16 +47,96 @@ const getPriorityText = (priority: 'high' | 'medium' | 'low') => {
 	}
 };
 
+// 드래그 가능한 공지사항 아이템 컴포넌트
+const SortableNoticeItem = ({ notice, onEditNotice, onDelete }: any) => {
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+		id: notice.id,
+	});
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	};
+
+	return (
+		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+			<List.Item className={styles.noticeItem}>
+				<div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'grab', flex: 1 }}>
+					<MenuOutlined style={{ color: '#999', fontSize: '16px', marginLeft: '-8px' }} />
+					<List.Item.Meta
+						style={{ marginLeft: '16px' }}
+						title={
+							<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+								{notice.title}
+								<Tag color={getPriorityColor(notice.priority)} className={styles.priorityTag}>
+									{getPriorityText(notice.priority)}
+								</Tag>
+							</div>
+						}
+						description={
+							<div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+								<Text type="secondary">{notice.content}</Text>
+								<Text type="secondary" className={styles.dateText}>
+									{notice.date}
+								</Text>
+							</div>
+						}
+					/>
+				</div>
+				<Space>
+					{onEditNotice && (
+						<Button
+							type="text"
+							icon={<EditOutlined />}
+							size="small"
+							onClick={() => onEditNotice(notice)}
+						/>
+					)}
+					<Popconfirm
+						title="공지사항 삭제"
+						description="이 공지사항을 삭제하시겠습니까?"
+						onConfirm={() => onDelete(notice.id)}
+						okText="삭제"
+						cancelText="취소"
+					>
+						<Button type="text" icon={<DeleteOutlined />} danger size="small" />
+					</Popconfirm>
+				</Space>
+			</List.Item>
+		</div>
+	);
+};
+
 interface NoticeListProps {
 	onAddNotice?: () => void;
 	onEditNotice?: (notice: any) => void;
 }
 
 export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice, onEditNotice }) => {
-	const { notices, removeNotice } = useNoticeStore();
+	const { notices, removeNotice, updateNoticeOrder } = useNoticeStore();
+
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	);
 
 	const handleDelete = (id: string) => {
 		removeNotice(id);
+	};
+
+	const handleDragEnd = (event: any) => {
+		const { active, over } = event;
+
+		if (active.id !== over.id) {
+			const oldIndex = notices.findIndex((notice) => notice.id === active.id);
+			const newIndex = notices.findIndex((notice) => notice.id === over.id);
+
+			const newNotices = arrayMove(notices, oldIndex, newIndex);
+			updateNoticeOrder(newNotices);
+		}
 	};
 
 	const extraButton = onAddNotice ? (
@@ -52,51 +148,23 @@ export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice, onEditNotic
 	return (
 		<div className={styles.noticeListCard}>
 			<Card title="공지사항 목록" extra={extraButton}>
-				<List
-					dataSource={notices}
-					renderItem={(notice) => (
-						<List.Item className={styles.noticeItem}>
-							<List.Item.Meta
-								title={
-									<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-										{notice.title}
-										<Tag color={getPriorityColor(notice.priority)} className={styles.priorityTag}>
-											{getPriorityText(notice.priority)}
-										</Tag>
-									</div>
-								}
-								description={
-									<div>
-										<Text type="secondary">{notice.content}</Text>
-										<br />
-										<Text type="secondary" className={styles.dateText}>
-											{notice.date}
-										</Text>
-									</div>
-								}
-							/>
-							<Space>
-								{onEditNotice && (
-									<Button
-										type="text"
-										icon={<EditOutlined />}
-										size="small"
-										onClick={() => onEditNotice(notice)}
-									/>
-								)}
-								<Popconfirm
-									title="공지사항 삭제"
-									description="이 공지사항을 삭제하시겠습니까?"
-									onConfirm={() => handleDelete(notice.id)}
-									okText="삭제"
-									cancelText="취소"
-								>
-									<Button type="text" icon={<DeleteOutlined />} danger size="small" />
-								</Popconfirm>
-							</Space>
-						</List.Item>
-					)}
-				/>
+				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+					<SortableContext
+						items={notices.map((notice) => notice.id)}
+						strategy={verticalListSortingStrategy}
+					>
+						<List
+							dataSource={notices}
+							renderItem={(notice) => (
+								<SortableNoticeItem
+									notice={notice}
+									onEditNotice={onEditNotice}
+									onDelete={handleDelete}
+								/>
+							)}
+						/>
+					</SortableContext>
+				</DndContext>
 			</Card>
 		</div>
 	);

@@ -6,6 +6,7 @@ interface NoticeStore {
 	addNotice: (notice: CreateNoticeData) => void;
 	removeNotice: (id: string) => void;
 	updateNotice: (id: string, notice: Partial<Notice>) => void;
+	updateNoticeOrder: (newNotices: Notice[]) => void;
 }
 
 const mockNotices: Notice[] = [
@@ -15,6 +16,7 @@ const mockNotices: Notice[] = [
 		content: '2025년 8월 27일 오후 9시 정기 회의가 예정되어 있습니다.',
 		date: '2025-08-27',
 		priority: 'high',
+		displayOrder: 1,
 	},
 	{
 		id: '2',
@@ -22,6 +24,7 @@ const mockNotices: Notice[] = [
 		content: '관리자 대시보드에 새로운 통계 기능이 추가되었습니다.',
 		date: '2025-08-25',
 		priority: 'medium',
+		displayOrder: 2,
 	},
 	{
 		id: '3',
@@ -29,6 +32,7 @@ const mockNotices: Notice[] = [
 		content: '공지사항 업데이트가 성공적으로 적용되었습니다.',
 		date: '2025-08-24',
 		priority: 'low',
+		displayOrder: 3,
 	},
 ];
 
@@ -40,10 +44,14 @@ export const useNoticeStore = create<NoticeStore>((set) => ({
 				{
 					...noticeData,
 					id: Date.now().toString(),
+					displayOrder: 1, // 새 공지사항은 항상 맨 위
 					createdAt: new Date().toISOString(),
 					updatedAt: new Date().toISOString(),
 				},
-				...state.notices,
+				...state.notices.map((notice) => ({
+					...notice,
+					displayOrder: notice.displayOrder + 1, // 기존 공지사항들은 순서 +1
+				})),
 			],
 		})),
 	removeNotice: (id) =>
@@ -57,5 +65,9 @@ export const useNoticeStore = create<NoticeStore>((set) => ({
 					? { ...notice, ...updatedNotice, updatedAt: new Date().toISOString() }
 					: notice,
 			),
+		})),
+	updateNoticeOrder: (newNotices) =>
+		set(() => ({
+			notices: newNotices,
 		})),
 }));
