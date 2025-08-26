@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import * as styles from './Layout.css';
 
 const { Header, Content } = Layout;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 interface LayoutProps {
 	children: ReactNode;
@@ -20,7 +20,7 @@ interface LayoutProps {
 }
 
 export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle }) => {
-	const { user, logout } = useAuthStore();
+	const { logout } = useAuthStore();
 	const { collapsed, setCollapsed } = useLayoutStore();
 	const [isMobile, setIsMobile] = useState(false);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

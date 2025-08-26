@@ -9,7 +9,6 @@ import { AdminLogo } from '@/shared/ui/icons';
 import * as styles from './SideMenu.css';
 
 const { Sider } = Layout;
-const { Text } = Typography;
 
 interface SideMenuProps {
 	collapsed: boolean;
