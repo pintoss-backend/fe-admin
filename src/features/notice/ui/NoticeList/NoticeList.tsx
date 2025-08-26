@@ -1,5 +1,11 @@
-import { Typography, Card, List, Tag, Button, Space, Popconfirm } from 'antd';
-import { DeleteOutlined, PlusOutlined, EditOutlined, MenuOutlined } from '@ant-design/icons';
+import { Typography, Card, List, Tag, Button, Space, Popconfirm, message } from 'antd';
+import {
+	DeleteOutlined,
+	PlusOutlined,
+	EditOutlined,
+	MenuOutlined,
+	ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { useNoticeStore } from '@/entities/notice';
 import {
 	DndContext,
@@ -97,11 +103,39 @@ const SortableNoticeItem = ({ notice, onEditNotice, onDelete }: any) => {
 						/>
 					)}
 					<Popconfirm
-						title="공지사항 삭제"
-						description="이 공지사항을 삭제하시겠습니까?"
+						title={
+							<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+								<ExclamationCircleOutlined style={{ color: '#ff4d4f', fontSize: '16px' }} />
+								<span style={{ fontWeight: 600 }}>공지사항 삭제</span>
+							</div>
+						}
+						description={
+							<div style={{ marginLeft: '24px', color: '#666' }}>공지사항을 삭제하시겠습니까?</div>
+						}
 						onConfirm={() => onDelete(notice.id)}
 						okText="삭제"
 						cancelText="취소"
+						okButtonProps={{
+							danger: true,
+							style: {
+								background: '#ff4d4f',
+								borderColor: '#ff4d4f',
+								fontWeight: 500,
+							},
+						}}
+						cancelButtonProps={{
+							style: {
+								borderColor: '#d9d9d9',
+								color: '#666',
+								fontWeight: 500,
+							},
+						}}
+						placement="topRight"
+						overlayStyle={{
+							borderRadius: '8px',
+							boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+						}}
+						icon={null}
 					>
 						<Button type="text" icon={<DeleteOutlined />} danger size="small" />
 					</Popconfirm>
@@ -127,7 +161,13 @@ export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice, onEditNotic
 	);
 
 	const handleDelete = (id: string) => {
-		removeNotice(id);
+		try {
+			removeNotice(id);
+			message.success('공지사항이 성공적으로 삭제되었습니다.');
+		} catch (error) {
+			console.error('공지사항 삭제 실패:', error);
+			message.error('공지사항 삭제에 실패했습니다.');
+		}
 	};
 
 	const handleDragEnd = (event: any) => {
