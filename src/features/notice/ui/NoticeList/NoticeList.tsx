@@ -190,7 +190,17 @@ export const NoticeList: React.FC<NoticeListProps> = ({ onAddNotice, onEditNotic
 
 	return (
 		<div className={styles.noticeListCard}>
-			<Card title="공지사항 목록" extra={extraButton}>
+			<Card
+				title={
+					<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+						공지사항 목록
+						<Tag color="default" style={{ margin: 0 }}>
+							총 {notices.length}건
+						</Tag>
+					</div>
+				}
+				extra={extraButton}
+			>
 				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 					<SortableContext
 						items={notices.map((notice) => notice.id)}
