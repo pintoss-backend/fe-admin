@@ -2,6 +2,13 @@ import { style } from '@vanilla-extract/css';
 
 export const LayoutContainer = style({
 	minHeight: '100vh',
+	display: 'flex',
+});
+
+export const MainLayout = style({
+	flex: 1,
+	display: 'flex',
+	flexDirection: 'column',
 });
 
 export const DrawerContent = style({
@@ -113,11 +120,17 @@ export const MobileUserInfo = style({
 export const Content = style({
 	padding: '16px',
 	background: '#f5f5f5',
-	minHeight: 'calc(100vh - 64px)',
+	flex: 1,
+	display: 'flex',
+	flexDirection: 'column',
+	overflow: 'auto',
 });
 
 export const MobileContent = style({
 	padding: '12px',
 	background: '#f5f5f5',
-	minHeight: 'calc(100vh - 56px)',
+	flex: 1,
+	display: 'flex',
+	flexDirection: 'column',
+	overflow: 'auto',
 });

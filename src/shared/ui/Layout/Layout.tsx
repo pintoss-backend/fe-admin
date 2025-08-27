@@ -91,7 +91,7 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 					</div>
 				</Drawer>
 			)}
-			<Layout>
+			<Layout className={styles.MainLayout}>
 				<Header className={isMobile ? styles.MobileHeader : styles.Header}>
 					<div className={styles.HeaderLeft}>
 						{isMobile && (
