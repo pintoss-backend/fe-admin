@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
+import { Users } from '@/pages/Users';
 import { Notice } from '@/pages/Notice';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 
@@ -15,7 +16,7 @@ function App() {
 		<Routes>
 			<Route path="/" element={<Navigate to="/dashboard" replace />} />
 			<Route path="/dashboard" element={<Dashboard />} />
-			<Route path="/users" element={<Dashboard />} />
+			<Route path="/users" element={<Users />} />
 			<Route path="/payments" element={<Dashboard />} />
 			<Route path="/sms" element={<Dashboard />} />
 			<Route path="/notifications" element={<Notice />} />
