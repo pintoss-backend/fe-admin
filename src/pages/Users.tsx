@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { AppLayout } from '@/shared/ui';
 import { Alert, Space } from 'antd';
-import type { Member } from '@/entities/member';
-import { getMembers } from '@/entities/member';
+import type { Member } from '@/entities/member/model';
+import { getMembers } from '@/entities/member/api';
 import { UserStats } from '@/widgets/UserStats';
 import { MembersFilters, useMembersFilters } from '@/widgets/UserFilter';
 import { MembersTable } from '@/widgets/UserTable';
