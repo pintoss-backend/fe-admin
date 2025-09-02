@@ -3,6 +3,7 @@ import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
 import { Users } from '@/pages/Users';
 import { Notice } from '@/pages/Notice';
+import { NewFaq } from '@/pages/NewFaq';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
 			<Route path="/payments" element={<Dashboard />} />
 			<Route path="/sms" element={<Dashboard />} />
 			<Route path="/notifications" element={<Notice />} />
-			<Route path="/faq" element={<Dashboard />} />
+			<Route path="/faq" element={<NewFaq />} />
 			<Route path="/inquiries" element={<Dashboard />} />
 			<Route path="/settings" element={<Dashboard />} />
 		</Routes>
