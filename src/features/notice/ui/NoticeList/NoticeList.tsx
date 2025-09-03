@@ -6,7 +6,7 @@ import {
 	MenuOutlined,
 	ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { useNoticeStore } from '@/entities/notice';
+import { useNoticeStore } from '@/entities/notice/store/noticeStore';
 import {
 	DndContext,
 	closestCenter,

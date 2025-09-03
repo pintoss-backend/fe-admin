@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Space, Divider } from 'antd';
-import { AppLayout } from '@/shared/ui';
-import { NoticeList } from '@/features/notice';
-import { NoticeForm } from '@/features/notice';
-import type { CreateNoticeData, Notice as NoticeItem } from '@/entities/notice';
+import { AppLayout } from '@/shared/ui/Layout/Layout';
+import { NoticeList } from '@/features/notice/ui/NoticeList';
+import { NoticeForm } from '@/features/notice/ui/NoticeForm';
+import type { CreateNoticeData, Notice as NoticeItem } from '@/entities/notice/model/notice';
 
 export const Notice = () => {
 	const [showForm, setShowForm] = useState(false);

@@ -2,8 +2,8 @@ import { Form, Input, Select, Button, DatePicker, Space, Card, message } from 'a
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import { useNoticeStore } from '@/entities/notice';
-import type { CreateNoticeData, Notice } from '@/entities/notice';
+import { useNoticeStore } from '@/entities/notice/store/noticeStore';
+import type { CreateNoticeData, Notice } from '@/entities/notice/model/notice';
 import * as styles from './NoticeForm.css';
 
 const { TextArea } = Input;

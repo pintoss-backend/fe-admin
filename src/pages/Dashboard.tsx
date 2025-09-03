@@ -1,5 +1,6 @@
-import { AppLayout } from '@/shared/ui';
-import { DashboardStats, ActivityFeed } from '@/widgets';
+import { AppLayout } from '@/shared/ui/Layout/Layout';
+import { DashboardStats } from '@/widgets/DashboardStats/DashboardStats';
+import { ActivityFeed } from '@/widgets/ActivityFeed/ActivityFeed';
 
 export const Dashboard: React.FC = () => {
 	return (

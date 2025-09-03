@@ -5,7 +5,7 @@ import { useAuthStore } from '@/entities/auth/store/authStore';
 import { useLayoutStore } from '@/shared/store/layoutStore';
 import { defaultMenuItems } from '@/shared/model/menuItems';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AdminLogo } from '@/shared/ui/icons';
+import { AdminLogo } from '@/shared/ui/icons/AdminLogo';
 import * as styles from './SideMenu.css';
 
 const { Sider } = Layout;
