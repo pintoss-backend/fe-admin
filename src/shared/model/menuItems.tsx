@@ -7,6 +7,7 @@ import {
 	MessageOutlined,
 	MailOutlined,
 	CreditCardOutlined,
+	WalletOutlined,
 } from '@ant-design/icons';
 
 export const defaultMenuItems = [
@@ -24,6 +25,11 @@ export const defaultMenuItems = [
 		key: 'payments',
 		icon: <CreditCardOutlined />,
 		label: '결제 내역',
+	},
+	{
+		key: 'product',
+		icon: <WalletOutlined />,
+		label: '상품권 관리',
 	},
 	{
 		key: 'sms',

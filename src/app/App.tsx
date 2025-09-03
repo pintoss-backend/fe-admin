@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
 import { Notice } from '@/pages/Notice';
+import { Product } from '@/pages/Product';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 			<Route path="/dashboard" element={<Dashboard />} />
 			<Route path="/users" element={<Dashboard />} />
 			<Route path="/payments" element={<Dashboard />} />
+			<Route path="/product" element={<Product />} />
 			<Route path="/sms" element={<Dashboard />} />
 			<Route path="/cs/notice" element={<Notice />} />
 			<Route path="/faq" element={<Dashboard />} />
