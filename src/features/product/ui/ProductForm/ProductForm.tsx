@@ -5,360 +5,242 @@ import {
 	InputNumber,
 	Select,
 	Radio,
-	Checkbox,
 	Button,
-	Card,
+	Modal,
 	Typography,
-	Space,
-	Divider,
-	Row,
-	Col,
 } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
 import type { Product, CreateProductData } from '@/entities/product/model/product';
+import { useProductStore } from '@/entities/product/store/productStore';
 
-const { Title, Text } = Typography;
-const { TextArea } = Input;
+const { Text } = Typography;
 const { Option } = Select;
 
 interface ProductFormProps {
-	onSubmit: (data: CreateProductData) => void;
+	visible: boolean;
+	onSubmit: (data: CreateProductData & { issuerId: number }) => void;
 	onCancel: () => void;
 	initialData?: Product | null;
 }
 
-export const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, onCancel, initialData }) => {
+export const ProductForm: React.FC<ProductFormProps> = ({ visible, onSubmit, onCancel, initialData }) => {
 	const [form] = Form.useForm();
-	const [discountRate, setDiscountRate] = React.useState<number>(0);
-	const [finalPrice, setFinalPrice] = React.useState<number>(0);
+	const { issuers } = useProductStore();
+	const [selectedIssuerId, setSelectedIssuerId] = React.useState<number | null>(null);
 	const [stockStatus, setStockStatus] = React.useState<'unlimited' | 'limited'>('unlimited');
-	const [paymentGateway, setPaymentGateway] = React.useState({
-		creditCard: 'galaxia' as 'galaxia' | 'danal',
-		mobile: 'galaxia' as 'galaxia' | 'danal',
-	});
+	const [currentStep, setCurrentStep] = React.useState(1);
+
+	// 팝업이 열릴 때마다 초기화 (편집 모드가 아닐 때만)
+	React.useEffect(() => {
+		if (visible && !initialData) {
+			form.resetFields();
+			setSelectedIssuerId(null);
+			setStockStatus('unlimited');
+			setCurrentStep(1);
+		}
+	}, [visible, form, initialData]);
 
 	React.useEffect(() => {
-		if (initialData) {
+		if (initialData && visible) {
 			const stockStatusValue = initialData.stockStatus || 'unlimited';
-			const paymentGatewayValue = {
-				creditCard: initialData.paymentGateway?.creditCard || 'galaxia',
-				mobile: initialData.paymentGateway?.mobile || 'galaxia',
-			};
-
-			form.setFieldsValue({
-				...initialData,
-				paymentGateway: paymentGatewayValue,
-				stockStatus: stockStatusValue,
-			});
+			// 편집 모드일 때는 해당 상품의 발행사를 찾아서 설정
+			const parentIssuer = issuers.find(issuer =>
+				issuer.products.some(product => product.id === initialData.id)
+			);
+			
+			console.log('편집할 상품:', initialData);
+			console.log('찾은 발행사:', parentIssuer);
+			
+			if (parentIssuer) {
+				setSelectedIssuerId(parentIssuer.id);
+			}
+			
+			// 폼 필드 설정을 setTimeout으로 지연시켜 렌더링 완료 후 실행
+			setTimeout(() => {
+				form.setFieldsValue({
+					...initialData,
+					issuerId: parentIssuer?.id, // 발행사 ID도 폼에 설정
+					stockStatus: stockStatusValue,
+				});
+				console.log('폼 값 설정 후:', form.getFieldsValue());
+			}, 100);
+			
 			setStockStatus(stockStatusValue);
-			setPaymentGateway(paymentGatewayValue);
-			setDiscountRate(initialData.discountRate || 0);
-			setFinalPrice(initialData.finalPrice || initialData.salePrice);
-		} else {
-			// 새로 생성할 때 초기값 설정
-			const defaultPaymentGateway = {
-				creditCard: 'galaxia' as const,
-				mobile: 'galaxia' as const,
-			};
-
-			form.setFieldsValue({
-				stockStatus: 'unlimited',
-				paymentGateway: defaultPaymentGateway,
-			});
-			setStockStatus('unlimited');
-			setPaymentGateway(defaultPaymentGateway);
+			// 편집 모드일 때는 모든 단계 표시
+			setCurrentStep(5);
 		}
-	}, [initialData, form]);
-
-	const handlePriceChange = (value: number | null) => {
-		if (value && discountRate > 0) {
-			setFinalPrice(value * (1 - discountRate / 100));
-		} else {
-			setFinalPrice(value || 0);
-		}
-	};
-
-	const handleDiscountRateChange = (value: number | null) => {
-		const price = form.getFieldValue('value') || 0;
-		if (value && price > 0) {
-			setDiscountRate(value);
-			setFinalPrice(price * (1 - value / 100));
-		} else {
-			setDiscountRate(0);
-			setFinalPrice(price);
-		}
-	};
+	}, [initialData, form, issuers, visible]);
 
 	const handleSubmit = (values: any) => {
-		const submitData: CreateProductData = {
-			category: values.category,
+		if (!selectedIssuerId) {
+			// 에러 처리
+			return;
+		}
+
+		const formData: CreateProductData & { issuerId: number } = {
+			issuerId: selectedIssuerId,
 			name: values.name,
-			imageUrl: values.imageUrl,
-			salePrice: values.salePrice,
-			discountRate: values.discountRate || 0,
-			finalPrice: values.finalPrice || values.salePrice,
-			stockStatus: values.stockStatus,
-			stockQuantity: values.stockQuantity,
-			paymentGateway: paymentGateway,
-			issuer: values.issuer,
-			homepage: values.homepage,
-			customerCenter: values.customerCenter,
-			productInfo: values.productInfo,
-			notes: values.notes,
-			descriptionImageUrl: values.descriptionImageUrl,
+			price: values.price,
+			stockStatus: stockStatus,
+			stockQuantity: stockStatus === 'limited' ? values.stockQuantity : undefined,
 		};
 
-		onSubmit(submitData);
+		onSubmit(formData);
 	};
 
-	return (
-		<Card>
-			<Title level={3} style={{ marginBottom: '24px' }}>
-				{initialData ? '상품 수정' : '상품 등록 (신규)'} (* 필수 입력 사항)
-			</Title>
+	const handleIssuerChange = (issuerId: number) => {
+		setSelectedIssuerId(issuerId);
+		if (currentStep === 1) {
+			setCurrentStep(2);
+		}
+	};
 
+	const selectedIssuer = issuers.find(issuer => issuer.id === selectedIssuerId);
+
+	return (
+		<Modal
+			title={initialData ? "상품권 수정" : "상품권 등록"}
+			open={visible}
+			onCancel={onCancel}
+			footer={null}
+			width={600}
+			destroyOnHidden
+		>
+			<div style={{ marginBottom: 16 }}>
+				<Text type="secondary" style={{ fontSize: 14 }}>
+					{initialData ? "기존 상품권 정보를 수정합니다." : "새로운 상품권을 등록합니다."}
+				</Text>
+			</div>
+			
 			<Form
 				form={form}
 				layout="vertical"
 				onFinish={handleSubmit}
-				initialValues={{
-					discountRate: 0,
-					finalPrice: 0,
-					stockStatus: 'unlimited',
-					paymentGateway: {
-						creditCard: 'galaxia',
-						mobile: 'galaxia',
-					},
+				onValuesChange={(changedValues) => {
+					// 상품권명 입력 시 다음 단계로
+					if (changedValues.name && currentStep === 2) {
+						setCurrentStep(3);
+					}
+					// 가격 입력 시 다음 단계로
+					if (changedValues.price && currentStep === 3) {
+						setCurrentStep(4);
+					}
 				}}
+				size="middle"
 			>
-				<Row gutter={24}>
-					<Col span={12}>
-						<Form.Item
-							label="카테고리 *"
-							name="category"
-							rules={[{ required: true, message: '카테고리를 선택해주세요' }]}
+				{/* 1단계: 발행사 선택 */}
+				{(currentStep >= 1 || initialData) && (
+					<Form.Item
+						label="발행사 선택"
+						rules={[{ required: true, message: '발행사를 선택해주세요.' }]}
+					>
+						<Select
+							placeholder="발행사를 선택하세요"
+							value={selectedIssuerId}
+							onChange={handleIssuerChange}
+							style={{ width: '100%' }}
 						>
-							<Select placeholder="카테고리를 선택하세요">
-								<Option value="디지털">디지털</Option>
-								<Option value="게임">게임</Option>
-								<Option value="문화">문화</Option>
-								<Option value="카페">카페</Option>
-								<Option value="스트리밍">스트리밍</Option>
-								<Option value="기타">기타</Option>
-							</Select>
-						</Form.Item>
-					</Col>
-					<Col span={12}>
-						<Form.Item
-							label="상품명"
-							name="name"
-							rules={[{ required: true, message: '상품명을 입력해주세요' }]}
-						>
-							<Input placeholder="상품명을 입력하세요" />
-						</Form.Item>
-					</Col>
-				</Row>
+							{issuers.map(issuer => (
+								<Option key={issuer.id} value={issuer.id}>
+									{issuer.name}
+								</Option>
+							))}
+						</Select>
+					</Form.Item>
+				)}
 
-				<Row gutter={24}>
-					<Col span={24}>
-						<Form.Item
-							label="상품이미지"
-							name="imageUrl"
-							rules={[{ required: true, message: '상품 이미지를 등록해주세요' }]}
-						>
-							<div
-								style={{
-									border: '2px dashed #d9d9d9',
-									borderRadius: '8px',
-									padding: '40px',
-									textAlign: 'center',
-									cursor: 'pointer',
-									background: '#fafafa',
-								}}
-							>
-								<UploadOutlined style={{ fontSize: '24px', color: '#999', marginBottom: '8px' }} />
-								<div>상품 이미지 등록하기</div>
-							</div>
-						</Form.Item>
-					</Col>
-				</Row>
+				{/* 2단계: 발행사 정보 표시 */}
+				{(currentStep >= 2 || initialData) && selectedIssuer && (
+					<div style={{ 
+						padding: 12, 
+						backgroundColor: '#f6f8fa', 
+						borderRadius: 6, 
+						marginBottom: 16,
+						border: '1px solid #e1e4e8'
+					}}>
+						<Text strong style={{ fontSize: 14 }}>선택된 발행사: {selectedIssuer.name}</Text>
+						<br />
+						<Text type="secondary" style={{ fontSize: 12 }}>
+							할인률: {selectedIssuer.paymentMethods.map(pm => 
+								`${pm.paymentMethod} ${pm.discountRate}%`
+							).join(', ')}
+						</Text>
+					</div>
+				)}
 
-				<Row gutter={24}>
-					<Col span={8}>
-						<Form.Item
-							label="판매금액"
-							name="salePrice"
-							rules={[{ required: true, message: '판매금액을 입력해주세요' }]}
-						>
-							<InputNumber
-								style={{ width: '100%' }}
-								placeholder="0"
-								onChange={handlePriceChange}
-								formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-								parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ''))}
-							/>
-						</Form.Item>
-					</Col>
-					<Col span={8}>
-						<Form.Item label="할인률(선택)" name="discountRate">
-							<InputNumber
-								style={{ width: '100%' }}
-								placeholder="0"
-								min={0}
-								max={100}
-								onChange={handleDiscountRateChange}
-								addonAfter="%"
-							/>
-						</Form.Item>
-					</Col>
-					<Col span={8}>
-						<Form.Item label="최종 판매금액 (할인률이 있는 경우 자동계산)" name="finalPrice">
-							<InputNumber
-								style={{ width: '100%' }}
-								value={finalPrice}
-								disabled
-								formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-							/>
-						</Form.Item>
-					</Col>
-				</Row>
+				{/* 2단계: 상품권명 */}
+				{(currentStep >= 2 || initialData) && (
+					<Form.Item
+						label="상품권명"
+						name="name"
+						rules={[{ required: true, message: '상품권명을 입력해주세요.' }]}
+					>
+						<Input placeholder="예: 문화상품권 5,000원" />
+					</Form.Item>
+				)}
 
-				<Row gutter={24}>
-					<Col span={12}>
-						<Form.Item label="재고현황" name="stockStatus">
-							<Radio.Group
-								value={stockStatus}
-								onChange={(e) => {
-									const value = e.target.value;
-									setStockStatus(value);
-									form.setFieldValue('stockStatus', value);
-								}}
-							>
-								<Space direction="vertical">
-									<Radio value="unlimited">재고무관</Radio>
-									<Radio value="limited">재고수량 직접입력</Radio>
-								</Space>
-							</Radio.Group>
-							{stockStatus === 'limited' && (
-								<div style={{ marginTop: '8px' }}>
-									<InputNumber
-										placeholder="0"
-										min={0}
-										style={{ width: '120px' }}
-										addonAfter="개"
-										value={form.getFieldValue('stockQuantity')}
-										onChange={(value) => form.setFieldValue('stockQuantity', value)}
-									/>
-								</div>
-							)}
-						</Form.Item>
-					</Col>
-					<Col span={12}>
-						<Form.Item label="결제대행사 선택">
-							<div>
-								<div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-									<Text strong style={{ width: '80px', textAlign: 'right' }}>
-										신용카드:
-									</Text>
-									<Radio.Group
-										value={paymentGateway.creditCard}
-										onChange={(e) =>
-											setPaymentGateway((prev) => ({ ...prev, creditCard: e.target.value }))
-										}
-										style={{ marginLeft: '16px' }}
-									>
-										<Radio value="galaxia">갤럭시아</Radio>
-										<Radio value="danal">다날</Radio>
-									</Radio.Group>
-								</div>
-								<div style={{ display: 'flex', alignItems: 'center' }}>
-									<Text strong style={{ width: '80px', textAlign: 'right' }}>
-										휴대폰:
-									</Text>
-									<Radio.Group
-										value={paymentGateway.mobile}
-										onChange={(e) =>
-											setPaymentGateway((prev) => ({ ...prev, mobile: e.target.value }))
-										}
-										style={{ marginLeft: '16px' }}
-									>
-										<Radio value="galaxia">갤럭시아</Radio>
-										<Radio value="danal">다날</Radio>
-									</Radio.Group>
-								</div>
-							</div>
-						</Form.Item>
-					</Col>
-				</Row>
+				{/* 3단계: 가격 */}
+				{(currentStep >= 3 || initialData) && (
+					<Form.Item
+						label="가격"
+						name="price"
+						rules={[{ required: true, message: '가격을 입력해주세요.' }]}
+					>
+						<InputNumber
+							placeholder="가격"
+							min={0}
+							style={{ width: '100%' }}
+							formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+						/>
+					</Form.Item>
+				)}
 
-				<Row gutter={24}>
-					<Col span={8}>
-						<Form.Item label="발행업체" name="issuer">
-							<Input placeholder="발행업체를 입력하세요" />
-						</Form.Item>
-					</Col>
-					<Col span={8}>
-						<Form.Item label="홈페이지" name="homepage">
-							<Input placeholder="홈페이지 URL을 입력하세요" />
-						</Form.Item>
-					</Col>
-					<Col span={8}>
-						<Form.Item label="고객센터" name="customerCenter">
-							<Input placeholder="고객센터 연락처를 입력하세요" />
-						</Form.Item>
-					</Col>
-				</Row>
-
-				<Row gutter={24}>
-					<Col span={24}>
-						<Form.Item label="상품 정보" name="productInfo">
-							<TextArea rows={4} placeholder="상품에 대한 상세 정보를 입력하세요" />
-						</Form.Item>
-					</Col>
-				</Row>
-
-				<Row gutter={24}>
-					<Col span={24}>
-						<Form.Item label="유의 사항" name="notes">
-							<TextArea rows={4} placeholder="상품 사용 시 유의사항을 입력하세요" />
-						</Form.Item>
-					</Col>
-				</Row>
-
-				<Divider />
-
-				<Row gutter={24}>
-					<Col span={24}>
-						<Title level={4}>상품설명 이미지 등록</Title>
-						<div
-							style={{
-								border: '2px dashed #d9d9d9',
-								borderRadius: '8px',
-								padding: '40px',
-								textAlign: 'center',
-								cursor: 'pointer',
-								background: '#fafafa',
+				{/* 4단계: 재고 상태 */}
+				{(currentStep >= 4 || initialData) && (
+					<Form.Item label="재고 상태">
+						<Radio.Group 
+							value={stockStatus} 
+							onChange={(e) => {
+								setStockStatus(e.target.value);
+								if (e.target.value === 'limited') {
+									setCurrentStep(5);
+								}
 							}}
 						>
-							<UploadOutlined style={{ fontSize: '24px', color: '#999', marginBottom: '8px' }} />
-							<div>상품설명 이미지 선택</div>
+							<Radio value="unlimited">무제한</Radio>
+							<Radio value="limited">제한</Radio>
+						</Radio.Group>
+					</Form.Item>
+				)}
+
+				{/* 5단계: 재고 개수 */}
+				{((currentStep >= 5 || initialData) && stockStatus === 'limited') && (
+					<Form.Item
+						label="재고 개수"
+						name="stockQuantity"
+						rules={[{ required: true, message: '재고 개수를 입력해주세요.' }]}
+					>
+						<InputNumber
+							placeholder="재고 개수"
+							min={0}
+							style={{ width: '100%' }}
+						/>
+					</Form.Item>
+				)}
+
+				{/* 버튼은 마지막 단계에서만 표시 */}
+				{(((currentStep >= 4 || initialData) && stockStatus === 'unlimited') || (currentStep >= 5 || initialData)) && (
+					<Form.Item style={{ marginTop: 24, marginBottom: 0 }}>
+						<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+							<Button onClick={onCancel}>
+								취소
+							</Button>
+							<Button type="primary" htmlType="submit" disabled={!selectedIssuerId}>
+								{initialData ? "상품권 수정" : "상품권 등록"}
+							</Button>
 						</div>
-					</Col>
-				</Row>
-
-				<Divider />
-
-				<Form.Item style={{ marginBottom: 0, textAlign: 'center' }}>
-					<Space size="middle">
-						<Button size="large" onClick={onCancel}>
-							취소
-						</Button>
-						<Button type="primary" htmlType="submit" size="large">
-							{initialData ? '수정' : '등록'}
-						</Button>
-					</Space>
-				</Form.Item>
+					</Form.Item>
+				)}
 			</Form>
-		</Card>
+		</Modal>
 	);
 };

@@ -3,8 +3,6 @@ import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
 import { Notice } from '@/pages/Notice';
 import { Product } from '@/pages/Product';
-import { ProductCreate } from '@/pages/ProductCreate';
-import { ProductEdit } from '@/pages/ProductEdit';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 
 function App() {
@@ -20,9 +18,7 @@ function App() {
 			<Route path="/dashboard" element={<Dashboard />} />
 			<Route path="/users" element={<Dashboard />} />
 			<Route path="/payments" element={<Dashboard />} />
-			<Route path="/product" element={<Product />} />
-			<Route path="/product/create" element={<ProductCreate />} />
-			<Route path="/product/edit/:id" element={<ProductEdit />} />
+			<Route path="/products" element={<Product />} />
 			<Route path="/sms" element={<Dashboard />} />
 			<Route path="/cs/notice" element={<Notice />} />
 			<Route path="/faq" element={<Dashboard />} />

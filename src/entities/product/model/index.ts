@@ -1,1 +1,9 @@
-export type { Product, CreateProductData, UpdateProductData } from './product';
+export type { 
+	Issuer, 
+	Product, 
+	PaymentMethod,
+	CreateIssuerData, 
+	UpdateIssuerData,
+	CreateProductData, 
+	UpdateProductData 
+} from './product';

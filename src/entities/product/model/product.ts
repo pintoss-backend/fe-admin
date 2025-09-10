@@ -1,49 +1,54 @@
+// 결제 수단 정보
+export interface PaymentMethod {
+	paymentMethod: string; // "결제수단A", "결제수단B"
+	discountRate: number;  // "할인율A", "할인율B"
+}
+
+// 발행사 정보
+export interface Issuer {
+	id: number;
+	name: string; // "상품권 발행사 이름"
+	phoneNumber: string; // "발행 업체 전화번호"
+	homepage: string; // "발행 업체 url 주소"
+	imageUrl?: string; // "발행사 이미지"
+	paymentMethods: PaymentMethod[]; // "결제 수단" 배열
+	products: Product[]; // "상품정보" 배열
+}
+
+// 상품권 정보 (상품정보)
 export interface Product {
-	id: string;
-	category: string;
+	id: number;
 	name: string;
-	imageUrl: string;
-	salePrice: number;
-	discountRate: number;
-	finalPrice: number;
-	stockStatus: 'unlimited' | 'limited';
-	stockQuantity?: number;
-	paymentGateway: {
-		creditCard: 'galaxia' | 'danal';
-		mobile: 'galaxia' | 'danal';
-	};
-	issuer: string;
-	homepage: string;
-	customerCenter: string;
-	productInfo: string;
-	notes: string;
-	descriptionImageUrl?: string;
-	status: 'active' | 'inactive' | 'expired';
+	price: number;
 	createdAt: string;
-	expiresAt: string;
-}
-
-export interface CreateProductData {
-	category: string;
-	name: string;
-	imageUrl: string;
-	salePrice: number;
-	discountRate: number;
-	finalPrice: number;
-	stockStatus: 'unlimited' | 'limited';
+	// 추가 필드들
+	stockStatus?: 'unlimited' | 'limited';
 	stockQuantity?: number;
-	paymentGateway: {
-		creditCard: 'galaxia' | 'danal';
-		mobile: 'galaxia' | 'danal';
-	};
-	issuer: string;
-	homepage: string;
-	customerCenter: string;
-	productInfo: string;
-	notes: string;
-	descriptionImageUrl?: string;
 }
 
+// 발행사 생성 데이터
+export interface CreateIssuerData {
+	name: string;
+	phoneNumber: string;
+	homepage: string;
+	imageUrl?: string;
+	paymentMethods: PaymentMethod[];
+}
+
+// 발행사 수정 데이터
+export interface UpdateIssuerData extends Partial<CreateIssuerData> {
+	id: number;
+}
+
+// 상품권 생성 데이터
+export interface CreateProductData {
+	name: string;
+	price: number;
+	stockStatus?: 'unlimited' | 'limited';
+	stockQuantity?: number;
+}
+
+// 상품권 수정 데이터
 export interface UpdateProductData extends Partial<CreateProductData> {
-	id: string;
+	id: number;
 }

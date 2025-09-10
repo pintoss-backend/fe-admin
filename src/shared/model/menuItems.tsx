@@ -27,7 +27,7 @@ export const defaultMenuItems = [
 		label: '결제 내역',
 	},
 	{
-		key: 'product',
+		key: 'products',
 		icon: <WalletOutlined />,
 		label: '상품권 관리',
 	},
