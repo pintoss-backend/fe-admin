@@ -34,9 +34,11 @@ export const Header = style({
 	boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
 	position: 'sticky',
 	top: 0,
-	zIndex: 1,
+	zIndex: 200,
 	height: '64px',
 	padding: '0 24px',
+	marginLeft: '180px',
+	transition: 'margin-left 0.2s',
 });
 
 export const MobileHeader = style({
@@ -47,7 +49,7 @@ export const MobileHeader = style({
 	boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
 	position: 'sticky',
 	top: 0,
-	zIndex: 1,
+	zIndex: 200,
 	height: '56px',
 	padding: '0 12px',
 });
@@ -114,6 +116,18 @@ export const Content = style({
 	padding: '16px',
 	background: '#f5f5f5',
 	minHeight: 'calc(100vh - 64px)',
+	marginLeft: '180px',
+	transition: 'margin-left 0.2s',
+});
+
+export const ContentCollapsed = style({
+	marginLeft: '80px',
+});
+
+export const HeaderCollapsed = style({
+	marginLeft: '80px',
+	background: '#fff !important',
+	backgroundColor: '#fff !important',
 });
 
 export const MobileContent = style({

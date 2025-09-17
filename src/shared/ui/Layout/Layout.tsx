@@ -15,7 +15,7 @@ const { Title } = Typography;
 
 interface LayoutProps {
 	children: ReactNode;
-	title: string;
+	title?: string;
 	mobileTitle?: string;
 }
 
@@ -50,7 +50,9 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 
 	// 페이지 title 설정
 	useEffect(() => {
-		document.title = `${title} - Admin`;
+		if (title) {
+			document.title = `${title} - Admin`;
+		}
 	}, [title]);
 
 	return (
@@ -92,7 +94,11 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 				</Drawer>
 			)}
 			<Layout>
-				<Header className={isMobile ? styles.MobileHeader : styles.Header}>
+				<Header
+					className={
+						isMobile ? styles.MobileHeader : collapsed ? styles.HeaderCollapsed : styles.Header
+					}
+				>
 					<div className={styles.HeaderLeft}>
 						{isMobile && (
 							<Button
@@ -102,12 +108,14 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 								className={styles.MobileMenuButton}
 							/>
 						)}
-						<Title
-							level={isMobile ? 4 : 3}
-							className={isMobile ? styles.MobileHeaderTitle : styles.HeaderTitle}
-						>
-							{isMobile ? mobileTitle || title : title}
-						</Title>
+						{title && (
+							<Title
+								level={isMobile ? 4 : 3}
+								className={isMobile ? styles.MobileHeaderTitle : styles.HeaderTitle}
+							>
+								{isMobile ? mobileTitle || title : title}
+							</Title>
+						)}
 					</div>
 					<Space
 						size={isMobile ? 'small' : 'middle'}
@@ -125,7 +133,13 @@ export const AppLayout: React.FC<LayoutProps> = ({ children, title, mobileTitle 
 					</Space>
 				</Header>
 
-				<Content className={isMobile ? styles.MobileContent : styles.Content}>{children}</Content>
+				<Content
+					className={
+						isMobile ? styles.MobileContent : collapsed ? styles.ContentCollapsed : styles.Content
+					}
+				>
+					{children}
+				</Content>
 			</Layout>
 		</Layout>
 	);

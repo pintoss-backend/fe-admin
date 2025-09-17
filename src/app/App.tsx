@@ -3,6 +3,8 @@ import { LoginForm } from '@/features/auth/ui/LoginForm/LoginForm';
 import { Dashboard } from '@/pages/Dashboard';
 import { Notice } from '@/pages/Notice';
 import { Product } from '@/pages/Product';
+import { IssuerCreate } from '@/pages/IssuerCreate';
+import { IssuerEdit } from '@/pages/IssuerEdit';
 import { useAuthStore } from '@/entities/auth/store/authStore';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
 			<Route path="/users" element={<Dashboard />} />
 			<Route path="/payments" element={<Dashboard />} />
 			<Route path="/products" element={<Product />} />
+			<Route path="/issuer/create" element={<IssuerCreate />} />
+			<Route path="/issuer/edit/:id" element={<IssuerEdit />} />
 			<Route path="/sms" element={<Dashboard />} />
 			<Route path="/cs/notice" element={<Notice />} />
 			<Route path="/faq" element={<Dashboard />} />

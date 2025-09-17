@@ -2,6 +2,11 @@ import { style } from '@vanilla-extract/css';
 
 export const SideMenuContainer = style({
 	boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
+	position: 'fixed',
+	left: 0,
+	top: 0,
+	height: '100vh',
+	zIndex: 100,
 });
 
 export const SideMenuHeader = style({
